@@ -10,6 +10,7 @@
 // @ts-ignore 构建期由 opennextjs-cloudflare 生成
 import openNextWorker from './.open-next/worker.js';
 import type { DurableObjectNamespace, ExecutionContext } from './src/worker/cf-runtime';
+import { handleProxyRequest } from './proxy-route.js';
 
 // 转发 OpenNext 自带的具名导出（DOQueueHandler / DOShardedTagCache / BucketCachePurge）。
 // 当前 open-next.config.ts 用的是 dummy 缓存/队列，暂时用不到；但一旦换成真缓存，
@@ -28,6 +29,12 @@ interface Env {
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
+
+    // 资源代理：/proxy 与 /proxy/* 在进 Next.js 之前拦下。
+    // 逻辑见同目录 proxy-route.js（转发 + CORS + UA/Referer + m3u8 改写 + CDN 白名单）。
+    if (url.pathname === '/proxy' || url.pathname.startsWith('/proxy/')) {
+      return handleProxyRequest(request);
+    }
 
     // 观影室的 Socket.IO 连接：整体交给 hub DO。
     // 客户端在 internal 模式下连同源 /socket.io（server-config 默认就是 internal），

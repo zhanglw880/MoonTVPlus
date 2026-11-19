@@ -2,7 +2,7 @@
 
 'use client';
 
-import { Blend, Cat, Clover, Container, Film, Globe, Home, Star, Tv, TvMinimalPlay, Users } from 'lucide-react';
+import { Blend, Cat, Clover, Container, Film, Home, Star, Tv, Users } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -54,11 +54,6 @@ const MobileBottomNav = ({ activePath }: MobileBottomNavProps) => {
       label: '综艺',
       href: '/douban?type=show',
     },
-      {
-        icon: TvMinimalPlay,
-        label: '电视直播',
-        href: '/live',
-      },
   ]);
 
   useEffect(() => {
@@ -87,25 +82,7 @@ const MobileBottomNav = ({ activePath }: MobileBottomNavProps) => {
         label: '综艺',
         href: '/douban?type=show',
       },
-      ...(runtimeConfig?.LIVE_ENABLED
-        ? [
-            {
-              icon: TvMinimalPlay,
-              label: '电视直播',
-              href: '/live',
-            },
-          ]
-        : []),
     ];
-
-    // 如果启用网络直播，添加网络直播入口
-    if (runtimeConfig?.WEB_LIVE_ENABLED) {
-      items.push({
-        icon: Globe,
-        label: '网络直播',
-        href: '/web-live',
-      });
-    }
 
     // 如果配置了 OpenList 或 Emby，添加私人影库入口
     if (runtimeConfig?.PRIVATE_LIBRARY_ENABLED) {
